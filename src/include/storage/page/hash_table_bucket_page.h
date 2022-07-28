@@ -47,6 +47,10 @@ class HashTableBucketPage {
    */
   bool GetValue(KeyType key, KeyComparator cmp, std::vector<ValueType> *result);
 
+  void GetAllValue(std::vector<MappingType> *result);
+
+  void Clear();
+
   /**
    * Attempts to insert a key and value in the bucket.  Uses the occupied_
    * and readable_ arrays to keep track of each slot's availability.

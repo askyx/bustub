@@ -42,7 +42,7 @@ TEST(StarterTest, SampleTest) {
 }
 
 /** Test that matrix initialization works as expected */
-TEST(StarterTest, DISABLED_InitializationTest) {
+TEST(StarterTest, InitializationTest) {
   auto matrix = std::make_unique<RowMatrix<int>>(2, 2);
 
   // Source contains too few elements
@@ -68,7 +68,7 @@ TEST(StarterTest, DISABLED_InitializationTest) {
   }
 }
 
-TEST(StarterTest, DISABLED_ElementAccessTest) {
+TEST(StarterTest, ElementAccessTest) {
   auto matrix = std::make_unique<RowMatrix<int>>(2, 2);
 
   std::vector<int> source(4);
@@ -115,7 +115,7 @@ TEST(StarterTest, DISABLED_ElementAccessTest) {
 }
 
 /** Test that matrix addition works as expected */
-TEST(StarterTest, DISABLED_AdditionTest) {
+TEST(StarterTest, AdditionTest) {
   auto matrix0 = std::make_unique<RowMatrix<int>>(3, 3);
 
   const std::vector<int> source0{1, 4, 2, 5, 2, -1, 0, 3, 1};
@@ -155,7 +155,7 @@ TEST(StarterTest, DISABLED_AdditionTest) {
 }
 
 /** Test that matrix multiplication works as expected */
-TEST(StarterTest, DISABLED_MultiplicationTest) {
+TEST(StarterTest, MultiplicationTest) {
   const std::vector<int> source0{1, 2, 3, 4, 5, 6};
   auto matrix0 = std::make_unique<RowMatrix<int>>(2, 3);
   matrix0->FillFrom(source0);
@@ -187,6 +187,20 @@ TEST(StarterTest, DISABLED_MultiplicationTest) {
   for (int i = 0; i < product->GetRowCount(); i++) {
     for (int j = 0; j < product->GetColumnCount(); j++) {
       EXPECT_EQ(expected[i * product->GetColumnCount() + j], product->GetElement(i, j));
+    }
+  }
+
+  auto matrix3 = std::make_unique<RowMatrix<int>>(2, 2);
+  const std::vector<int> source3{10, 9, 8, 7};
+  matrix3->FillFrom(source3);
+
+  const std::vector<int> expected1{10, 23, 2, 39};
+
+  auto re = RowMatrixOperations<int>::GEMM(matrix0.get(), matrix1.get(), matrix3.get());
+
+  for (int i = 0; i < re->GetRowCount(); i++) {
+    for (int j = 0; j < re->GetColumnCount(); j++) {
+      EXPECT_EQ(expected1[i * re->GetColumnCount() + j], re->GetElement(i, j));
     }
   }
 }

@@ -59,6 +59,7 @@ class InsertExecutor : public AbstractExecutor {
  private:
   /** The insert plan node to be executed*/
   const InsertPlanNode *plan_;
+  TableInfo *table_;
 };
 
 }  // namespace bustub

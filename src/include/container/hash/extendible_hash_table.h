@@ -85,6 +85,8 @@ class ExtendibleHashTable {
   void VerifyIntegrity();
 
  private:
+  void ChangeBucketDepth(uint32_t bucket_index, page_id_t bucket_page_id, HashTableDirectoryPage *dir_page);
+
   /**
    * Hash - simple helper to downcast MurmurHash's 64-bit hash to 32-bit
    * for extendible hashing.

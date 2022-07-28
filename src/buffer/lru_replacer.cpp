@@ -14,16 +14,56 @@
 
 namespace bustub {
 
-LRUReplacer::LRUReplacer(size_t num_pages) {}
+LRUReplacer::LRUReplacer(size_t num_pages) { capacity_ = num_pages; }
 
 LRUReplacer::~LRUReplacer() = default;
 
-bool LRUReplacer::Victim(frame_id_t *frame_id) { return false; }
+bool LRUReplacer::Victim(frame_id_t *frame_id) {
+  latch_.lock();
 
-void LRUReplacer::Pin(frame_id_t frame_id) {}
+  if (lru_map_.empty()) {
+    latch_.unlock();
+    return false;
+  }
 
-void LRUReplacer::Unpin(frame_id_t frame_id) {}
+  auto frame = lru_list_.back();
 
-size_t LRUReplacer::Size() { return 0; }
+  lru_map_.erase(frame);
+  lru_list_.pop_back();
+  *frame_id = frame;
+
+  latch_.unlock();
+  return true;
+}
+
+void LRUReplacer::Pin(frame_id_t frame_id) {
+  latch_.lock();
+
+  if (lru_map_.find(frame_id) != lru_map_.end()) {
+    lru_list_.erase(lru_map_[frame_id]);
+    lru_map_.erase(frame_id);
+  }
+
+  latch_.unlock();
+}
+
+void LRUReplacer::Unpin(frame_id_t frame_id) {
+  latch_.lock();
+
+  if (lru_map_.find(frame_id) == lru_map_.end()) {
+    while (lru_map_.size() >= capacity_) {
+      auto frame = lru_list_.back();
+      lru_map_.erase(frame);
+      lru_list_.pop_back();
+    }
+
+    lru_list_.push_front(frame_id);
+    lru_map_[frame_id] = lru_list_.begin();
+  }
+
+  latch_.unlock();
+}
+
+size_t LRUReplacer::Size() { return lru_map_.size(); }
 
 }  // namespace bustub
